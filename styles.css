@@ -5,3 +5,29 @@ h1, h2 {
 h2 {
   font-size: medium;
 }
+
+#dashoboard {
+  display: flex;
+}
+
+#dashboard .testentry {
+  margin: 5px;
+  border: solid lightgrey 1px;
+  border-radius: 3px;
+
+  padding: 3px;
+
+  flex: 1 1 auto;
+}
+
+#dashboard .testentry.good {
+  background-color: #e0ffe0;
+}
+
+#dashboard .testentry.okay {
+  background-color: #ffd090;
+}
+
+#dashboard .testentry.bad {
+  background-color: #ff9090;
+}

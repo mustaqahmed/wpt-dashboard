@@ -45,6 +45,8 @@ async function fetchTestResults(run_id, wpt_folder) {
     xargs grep --files-with-matches input-dev@ | \
     sed -e 's|third_party/blink/web_tests/external/wpt/|  "|' -e 's|/OWNERS$|",|' | \
     sort
+
+  TODO: automatically pull from http://cs.chromium.org/.
 */
 let wpt_test_folders = [
   "dom/events/scrolling",
@@ -70,6 +72,11 @@ async function init() {
     let result = await fetchTestResults(run_data.id, test_folder);
 
     let result_elem = document.createElement("div");
+    result_elem.classList.add("testentry");
+    result_elem.classList.add(result.passing == result.total ? "good" :
+			      result.passing > result.total*0.75 ? "okay" :
+			      "bad");
+
     result_elem.appendChild(document.createElement("span"))
 	.textContent = test_folder;
     result_elem.appendChild(document.createElement("span"))
