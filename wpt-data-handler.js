@@ -63,6 +63,15 @@ let wpt_test_folders = [
   "visual-viewport",
 ];
 
+function getStyleClassFromPassRatio(passRatio) {
+  const min_ratio_for_good_test = 0.99;
+  const min_ratio_for_okay_test = 0.75;
+
+  return passRatio > min_ratio_for_good_test ? "good" :
+      passRatio > min_ratio_for_okay_test ? "okay" :
+      "bad";
+}
+
 async function init() {
   let run_data = await fetchLatestRunData();
 
@@ -71,19 +80,32 @@ async function init() {
   for (let test_folder of wpt_test_folders) {
     let result = await fetchTestResults(run_data.id, test_folder);
 
-    let result_elem = document.createElement("div");
-    result_elem.classList.add("testentry");
-    result_elem.classList.add(result.passing == result.total ? "good" :
-			      result.passing > result.total*0.75 ? "okay" :
-			      "bad");
+    let testentry_elem = document.createElement("div");
+    testentry_elem.classList.add("testentry");
 
-    result_elem.appendChild(document.createElement("span"))
-	.textContent = test_folder;
-    result_elem.appendChild(document.createElement("span"))
-	.textContent = " ";
-    result_elem.appendChild(document.createElement("span"))
-	.textContent = result.passing + '/' + result.total;
+    {
+      let testname_elem = testentry_elem.appendChild(document.createElement("span"));
+      testname_elem.classList.add("name");
+      testname_elem.textContent = test_folder;
+    }
 
-    document.getElementById("dashboard").appendChild(result_elem);
+    // TODO: Pull past data.
+    for (let i = 0; i < 4; i++) {
+      let result_elem = testentry_elem.appendChild(document.createElement("span"));
+      result_elem.classList.add("result");
+      result_elem.classList.add("old");
+      result_elem.classList.add(getStyleClassFromPassRatio(result.passing/result.total));
+      result_elem.textContent = result.passing;
+    }
+
+    {
+      let result_elem = testentry_elem.appendChild(document.createElement("span"));
+      result_elem.classList.add("result");
+      result_elem.classList.add("latest");
+      result_elem.classList.add(getStyleClassFromPassRatio(result.passing/result.total));
+      result_elem.textContent = result.passing + '/' + result.total;
+    }
+
+    document.getElementById("dashboard-wpt").appendChild(testentry_elem);
   }
 }

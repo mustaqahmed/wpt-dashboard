@@ -1,33 +1,65 @@
-h1, h2 {
+h1, h2, h3 {
   text-align: center;
 }
 
-h2 {
+h3 {
   font-size: medium;
+  color: grey;
 }
 
-#dashoboard {
+.dashboard {
   display: flex;
+  flex-wrap: wrap;
 }
 
-#dashboard .testentry {
+.testentry {
+  flex: 1 1 45%;
   margin: 5px;
   border: solid lightgrey 1px;
   border-radius: 3px;
 
+  background-color: #f0f0f0;
   padding: 3px;
 
-  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
 }
 
-#dashboard .testentry.good {
+.testentry .name {
+  flex: 1 1 auto;
+  font-family: monospace;
+  overflow-wrap: anywhere;
+}
+
+.testentry .result {
+  margin: 2px;
+  border-radius: 7px;
+  border: solid grey 1px;
+
+  padding: 1px;
+  text-align: center;
+}
+
+.testentry .result.old {
+  flex: 0 0 5ex;
+
+  font-size: xx-small;
+}
+
+.testentry .result.latest {
+  flex: 0 0 11ex;
+
+  font-size: small;
+}
+
+.testentry .result.good {
   background-color: #e0ffe0;
 }
 
-#dashboard .testentry.okay {
+.testentry .result.okay {
   background-color: #ffd090;
 }
 
-#dashboard .testentry.bad {
+.testentry .result.bad {
   background-color: #ff9090;
 }
