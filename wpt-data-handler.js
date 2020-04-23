@@ -101,16 +101,13 @@ async function fetchLatestRunDataAndResults() {
 }
 
 function getStyleClassFromPassRatio(passRatio) {
-  const min_ratio_for_good_test = 0.99;
+  const min_ratio_for_good_test = 0.9999;
   const min_ratio_for_okay_test = 0.75;
 
   return passRatio > min_ratio_for_good_test ? "good" :
       passRatio > min_ratio_for_okay_test ? "okay" :
       "bad";
 }
-
-//async function init() {
-//  let run_data = await fetchLatestRunData();
 
 function updateLatestResultsView() {
   let last_run_data = test_data[test_data.length-1];
@@ -129,13 +126,13 @@ function updateLatestResultsView() {
       testname_elem.textContent = test_folder;
     }
 
-    // TODO: Pull past data.
-    for (let i = 0; i < 4; i++) {
+    for (let i = Math.max(0, test_data.length-5); i < test_data.length-1; i++) {
       let result_elem = testentry_elem.appendChild(document.createElement("span"));
+      let past_result = test_data[i].folders[test_folder];
       result_elem.classList.add("result");
       result_elem.classList.add("old");
-      result_elem.classList.add(getStyleClassFromPassRatio(result.passing/result.total));
-      result_elem.textContent = result.passing;
+      result_elem.classList.add(getStyleClassFromPassRatio(past_result.passing/past_result.total));
+      result_elem.textContent = past_result.passing;
     }
 
     {
@@ -180,7 +177,7 @@ function updateHistoricalResultsView() {
 
   var chart_pass = new google.visualization.LineChart(document.getElementById('wpt-pass-history'));
   chart_pass.draw(google.visualization.arrayToDataTable(data_pass), {
-    title: 'Input dev total failed tests',
+    title: 'Input dev total passed tests',
     pointSize: 5,
     vAxis: {format: '0'},
     series: {
@@ -190,13 +187,17 @@ function updateHistoricalResultsView() {
   });
 }
 
+function updateViews() {
+  updateLatestResultsView();
+  updateHistoricalResultsView();
+}
+
 async function appTick() {
   document.getElementById("last_updated").innerHTML = "Fetching the latest data...";
   await fetchLatestRunDataAndResults();
   document.getElementById("last_updated").innerHTML = new Date().toTimeString();
  
-  updateLatestResultsView();
-  updateHistoricalResultsView();
+  updateViews();
 
   // Do some historical data fetch for the first time the app loads and this function is called.
   // In this case test_data already has one entry as for the latest run that is already fetched.
@@ -217,7 +218,7 @@ async function fetchRecentRunDataAndResults() {
     if (test_data[test_data.length-1].timestamp > entry.timestamp) {
       entry.folders = await fetchTestResultsOfRun(entry.id);
       test_data.splice(test_data.length-1, 0, entry);
-      updateHistoricalResultsView();
+      updateViews();
     }
   }
 }
